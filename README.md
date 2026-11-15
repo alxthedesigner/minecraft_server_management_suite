@@ -15,14 +15,54 @@ This management suite is built upon the Raspberry Pi Minecraft documentation and
 
   | Part | Runs from | Description | Source |
   |---|---|---|---|
-  | **Manager API Services**| Raspberry Pi or Mini PC server; Port 8080 | FastAPI backend services that allows the server manager app to interact with the server | `manager-api/`|
   | **Server Manager App**| Desktop or Command line | Dashboard to interact with the server; start/stop the server, send console commands over RCON, add or remove mods from the server, access the whitelist and config files, and streams the server log over WebSocket. | `server-manager-app/` |
+  | **Manager API**| Raspberry Pi or Mini PC server; Port 8080 | FastAPI backend services that allows the Server Manager App to interact with the server | `manager-api/`|
   | **Player Access App** | Raspberry Pi or Mini PC server; Port 5000 | Small Flask website for players see instructions on how to join the server, the server status, the current mods on the server available to download, and players online. Only accessible when player is on the Tailscale VPN (or whichever VPN you use). | `player-access-app/` |
 
 
 ---
 
-# Part 1. Manager API Services (on Raspberry Pi)
+
+# Part 1. Server Manager App (on your Desktop)
+
+1. Install app packages
+```bash
+cd minecraft-server-manager/server-manager-app
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python main.py
+```
+
+2. Features and Main Functions
+   
+| Feature | Function |
+|---|---|
+| **Dashboard** | Server status, Start / Stop / Restart / Wake, **Backup World**, Pi CPU, memory, swap, disk and temperature (°C and °F), non-whitelisted join alerts, **Player Portal on/off** |
+| **Console** | Live server log (last 200 lines on connect, follows the log across server restarts), send server commands, optional filter for RCON noise |
+| **Players** | Online players, whitelist editor, approve/deny whitelist requests from the portal |
+| **Mods** | Group mods into **packages**, tick which mods in each package are active, upload many `.jar` files at once, and switch the server to a package in one click |
+| **Config** | Edit `server.properties`, JVM arguments and NeoForge/mod config files |
+| **Instructions** | The player portal's "How to Join" steps (read from the portal's page, so they always match), as a refresher |
+| **Activate Package on Server** | enables the checked mods in that package and moves every other mod into `mods_disabled/`. Nothing is deleted. Restart the server afterwards.|
+| **Download Packages…** | downloads a zip of one or more mods (called packages) that a player adds to their `mods` folder. Packages are stored in the Server Manager App's settings and are published to the Raspberry Pi's `mod_packages.json` file |
+| **Backup World** | downloads the whole world as minecraft_world_backup_<date>_<time>.zip to the Desktop running the Server Manager App. On the Raspberry Pi, it turns autosave off (save-off), writes everything to disk (save-all flush), zips the world, and always turns autosave back on. The download is written to a .part file |
+
+
+
+3. On first launch, open **Settings** (bottom of the sidebar) and enter your Pi's Tailscale IP or MagicDNS name, SSH username, the server folder on the Pi, API port `8080`, the RCON password and the API key. These are saved only on your computer.
+
+4. Add Desktop Application of **Minecraft Server Manager**:
+
+```bash
+./install_mac_app.sh
+```
+This adds **Minecraft Server Manager** to `/Applications`. Logs: `~/Library/Logs/Minecraft Server Manager.log`.
+
+
+---
+
+# Part 2. Manager API (on Raspberry Pi)
 
 1. Enable RCON in `server.properties`
 RCON (remote control) lets you send commands to the Minecraft server, like whitelisting, changing game modes for users, etc.
@@ -81,47 +121,8 @@ Leave roughly 1 GB for the operating system (on a 2 GB board use about `-Xmx1300
 ---
 
 
-# Part 2. Server Manager App (on your Desktop)
-
-1. Install app packages
-```bash
-cd server-manager/admin-app
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-python main.py
-```
-
-2. Features and Main Functions
-   
-| Feature | Function |
-|---|---|
-| **Dashboard** | Server status, Start / Stop / Restart / Wake, **Backup World**, Pi CPU, memory, swap, disk and temperature (°C and °F), non-whitelisted join alerts, **Player Portal on/off** |
-| **Console** | Live server log (last 200 lines on connect, follows the log across server restarts), send server commands, optional filter for RCON noise |
-| **Players** | Online players, whitelist editor, approve/deny whitelist requests from the portal |
-| **Mods** | Group mods into **packages**, tick which mods in each package are active, upload many `.jar` files at once, and switch the server to a package in one click |
-| **Config** | Edit `server.properties`, JVM arguments and NeoForge/mod config files |
-| **Instructions** | The player portal's "How to Join" steps (read from the portal's page, so they always match), as a refresher |
-| **Activate Package on Server** | enables the checked mods in that package and moves every other mod into `mods_disabled/`. Nothing is deleted. Restart the server afterwards.|
-| **Download Packages…** | downloads a zip of one or more mods (called packages) that a player adds to their `mods` folder. Packages are stored in the Server Manager App's settings and are published to the Raspberry Pi's `mod_packages.json` file |
-| **Backup World** | downloads the whole world as minecraft_world_backup_<date>_<time>.zip to the Desktop running the Server Manager App. On the Raspberry Pi, it turns autosave off (save-off), writes everything to disk (save-all flush), zips the world, and always turns autosave back on. The download is written to a .part file |
-
-
-
-3. On first launch, open **Settings** (bottom of the sidebar) and enter your Pi's Tailscale IP or MagicDNS name, SSH username, the server folder on the Pi, API port `8080`, the RCON password and the API key. These are saved only on your computer.
-
-4. Add Desktop Application of **Minecraft Server Manager**:
-
-```bash
-./install_mac_app.sh
-```
-This adds **Minecraft Server Manager** to `/Applications`. Logs: `~/Library/Logs/Minecraft Server Manager.log`.
-
-
----
-
 # Part 3. Player Access App (on Raspberry Pi)
-Players can see server status and who's online, download the **active mod package** (or tick several packages and download them together), and follow the join steps. Downloads go through this player access app to the API, so the API key never reaches players' browsers.
+Players can see server status and who's online, download the **active mod package** (or tick several packages and download them together), and follow the join steps. Downloads go through this player access app to the API, so the API key never reaches players' browsers. Defaults to "off" on boot and toggle is optional.
 
 1. Install and configure the Player access App on the raspberry pi
 
@@ -150,7 +151,6 @@ sudo visudo -c
 ```
 
   Only run one player access service. An older or second copy bound to `0.0.0.0:5000` would expose the portal to your whole LAN and fight over the port.
-  The portal listens on `127.0.0.1:5000`. To share it with players over your tailnet only, use `tailscale serve` on the Pi.
 
 
 ---
