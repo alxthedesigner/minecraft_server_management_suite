@@ -4,7 +4,7 @@ This is a suite of apps that makes managing a Minecraft server on a Raspberry Pi
 This management suite is built upon the Raspberry Pi Minecraft documentation and was tested using a NeoForge Minecraft server running on a Raspberry Pi 5. 
 
 ## Prerequisites
-* [NeoForge Minecraft Server](https://github.com/alxthedesigner/raspberry-pi-5-minecraft-server/blob/main/README.md)
+* Running [NeoForge Minecraft Server](https://github.com/alxthedesigner/raspberry-pi-5-minecraft-server/blob/main/README.md)
 * Raspberry Pi 5
 * Minecraft 26.3 
 * NeoForge 26.3.0.60-beta / 26.3.0.76 
@@ -113,10 +113,8 @@ Memory (`user_jvm_args.txt`):
 `run.sh` reads Java settings from `user_jvm_args.txt` in the server folder. Out of the box every line is a comment, so Java only gets a quarter of the Pi's RAM. Add a line such as:
 
 ```
--Xmx6G
+-Xmx4G
 ```
-
-Leave roughly 1 GB for the operating system (on a 2 GB board use about `-Xmx1300M`).
 
 ---
 
