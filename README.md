@@ -46,8 +46,7 @@ Never reuse this password anywhere else, and never commit `server.properties` fi
     Edit `minecraft-manager.service` and replace the example user `pi` and `/home/pi/...` paths with your own username and home folder.
 
 
-3. Install Minecraft server as a service
-Install the Minecraft server and start the server on boot (of the Raspberry Pi) 
+3. Install the Minecraft server and start the server on boot (of the Raspberry Pi) 
 
 ```bash
 sudo cp minecraft-manager.service /etc/systemd/system/
