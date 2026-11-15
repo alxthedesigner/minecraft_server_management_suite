@@ -7,7 +7,7 @@ Tested with Minecraft 26.3 and NeoForge 26.3.0.60-beta / 26.3.0.76 using the Tai
 There are three parts to this suite:
 
 | Part | Runs on | Description | Port/Source |
-|---|---|---|
+|---|---|---|---|
 | **Server Manager App** (`admin-app/`) | Your Mac or PC | Dashboard to interact with the server; start/stop the server, send console commands over RCON, add or remove mods from the server, access the whitelist and config files, and streams the server log over WebSocket. | Desktop App or command line |
 | **Player Access App** (`player-portal/`) | Raspberry Pi or Mini PC server | Small Flask website for players see instructions on how to join the server, the server status, the current mods on the server available to download, and players online. Only accessible when player is on the Tailscale VPN (or whichever VPN you use). | Port 5000 |
 | **API Services** (`pi-backend/`) | Raspberry Pi or Mini PC server  | FastAPI backend services that allows the server manager app to interact with the server | Port 8080 |
