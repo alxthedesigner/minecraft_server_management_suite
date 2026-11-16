@@ -15,9 +15,9 @@ This management suite is built upon the Raspberry Pi Minecraft documentation and
 
   | Part | Runs from | Description | Source |
   |---|---|---|---|
-  | **Server Manager App**| Desktop or Command line | Dashboard to interact with the server; start/stop the server, send console commands over RCON, add or remove mods from the server, access the whitelist and config files, and streams the server log over WebSocket. | `server-manager-app/` |
+  | **Server Manager Desktop App**| Desktop or Command line | Dashboard to interact with the server; start/stop the server, send console commands over RCON, add or remove mods from the server, access the whitelist and config files, and streams the server log over WebSocket. | `server-manager-app/` |
   | **Manager API**| Raspberry Pi or Mini PC server; Port 8080 | FastAPI backend services that allows the Server Manager App to interact with the server | `manager-api/`|
-  | **Player Access App** | Raspberry Pi or Mini PC server; Port 5000 | Small Flask website for players see instructions on how to join the server, the server status, the current mods on the server available to download, and players online. Only accessible when player is on the Tailscale VPN (or whichever VPN you use). | `player-access-app/` |
+  | **Player Access Website App** | Raspberry Pi or Mini PC server; Port 5000 | Small Flask website for players see instructions on how to join the server, the server status, the current mods on the server available to download, and players online. Only accessible when player is on the Tailscale VPN (or whichever VPN you use). | `player-access-app/` |
 
 
 ---
